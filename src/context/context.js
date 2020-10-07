@@ -1,8 +1,8 @@
 import React, { Component, createContext } from "react";
 import { linkData } from "./linkData";
 import { socialData } from "./socialData";
-import { items } from "./productData";
-// import { FaThinkPeaks } from "react-icons/fa";
+// import { items } from "./productData";
+import { client } from "./contentful";
 const ProductContext = createContext();
 //Provider
 //Consumer
@@ -31,8 +31,15 @@ class ProductProvider extends Component {
   };
 
   componentDidMount() {
+    // this.setProducts(items);
+
     // from contentful items
-    this.setProducts(items);
+    client
+      .getEntries({
+        content_type: "techStoreProducts",
+      })
+      .then((response) => this.setProducts(response.items))
+      .catch(console.error);
   }
 
   // set products
@@ -42,6 +49,7 @@ class ProductProvider extends Component {
       const { id } = item.sys;
       const image = item.fields.image.fields.file.url;
       const product = { id, ...item.fields, image };
+      console.log(product);
       return product;
     });
     // featured products
